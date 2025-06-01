@@ -189,9 +189,10 @@ def zubereitung():
                 unsafe_allow_html=True
             )
             if st.button("✅ Zubereitet", key=f"done_{bestell_id}"):
-    entferne_kuechen_bestellung(bestell_id)
-    setze_signal()  # <- hier!
-    st.rerun()
+                entferne_kuechen_bestellung(bestell_id)
+                setze_signal()
+                st.rerun()
+
 
 
 def statistik():
