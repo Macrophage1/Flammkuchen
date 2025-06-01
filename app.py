@@ -5,8 +5,6 @@ import pandas as pd
 import math
 import time
 
-
-
 DB_NUTZER = "nutzer.db"
 DB_ARTIKEL = "artikel.db"
 DB_BESTELLUNG = "bestellungen.db"
@@ -169,6 +167,17 @@ from streamlit_autorefresh import st_autorefresh
 def zubereitung():
     st.subheader("🔥 Zubereitung")
 
+    # Styling für Buttons und Container
+    st.markdown(
+        f"""<style>
+        div[data-testid="column"] button[kind="primary"] {{
+            padding: 1.2em;
+            font-size: 24px;
+        }}
+        </style>""",
+        unsafe_allow_html=True
+    )
+
     # Alle 5 Sekunden Seite neu laden
     st_autorefresh(interval=5000, key="zubereitungs_refresh")
 
@@ -192,17 +201,28 @@ def zubereitung():
     for bestell_id, inhalt in bestellungen:
         with st.container():
             st.markdown(
-                f"<div style='font-size:28px; line-height:1.8em; border:2px solid #f63366; padding:1em; border-radius:10px; background:#fff5f8'>{inhalt.replace(chr(10), '<br>')}</div>",
+                f"""
+                <div style='
+                    font-size:32px;
+                    font-weight:bold;
+                    line-height:1.8em;
+                    border:2px solid #000000;
+                    padding:1em;
+                    border-radius:10px;
+                    background:#ffffff;
+                    color:#000000;
+                    margin-bottom: 1em;
+                '>
+                    {inhalt.replace(chr(10), '<br>')}
+                </div>
+                """,
                 unsafe_allow_html=True
             )
-            if st.button("✅ Zubereitet", key=f"done_{bestell_id}"):
+            if st.button("✅ Zubereitet", key=f"done_{bestell_id}", use_container_width=True):
                 entferne_kuechen_bestellung(bestell_id)
                 setze_signal()
                 st.session_state.kueche_bestellungen = get_kuechen_bestellungen()
                 st.rerun()
-
-
-
 
 
 def statistik():
