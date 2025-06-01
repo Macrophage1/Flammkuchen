@@ -5,6 +5,8 @@ import pandas as pd
 import math
 import time
 
+
+
 DB_NUTZER = "nutzer.db"
 DB_ARTIKEL = "artikel.db"
 DB_BESTELLUNG = "bestellungen.db"
@@ -162,31 +164,31 @@ def bestellung():
         st.session_state.bestellung_abgeschlossen = True
         st.rerun()
 
+from streamlit_autorefresh import st_autorefresh
+
 def zubereitung():
     st.subheader("🔥 Zubereitung")
 
-    # Erstinitialisierung
+    # Alle 5 Sekunden Seite neu laden
+    st_autorefresh(interval=5000, key="zubereitungs_refresh")
+
     if "letzte_abfrage" not in st.session_state:
         st.session_state.letzte_abfrage = 0
     now = time.time()
 
-    # Alle 3 Sekunden prüfen, ob Signal vorliegt
-    if now - st.session_state.letzte_abfrage > 3:
+    if now - st.session_state.letzte_abfrage > 2:
         st.session_state.letzte_abfrage = now
         if pruefe_signal():
             st.session_state.kueche_bestellungen = get_kuechen_bestellungen()
             zuruecksetzen_signal()
 
-    # Immer aus Session State lesen (falls nichts drin: initial laden)
     bestellungen = st.session_state.get("kueche_bestellungen", get_kuechen_bestellungen())
 
-    # Keine offenen Bestellungen
     if not bestellungen:
         st.markdown("## ✅ **Alle Bestellungen erledigt!** 🎉🎉🎉")
         st.markdown("<marquee>👨‍🍳 Zeit für eine Pause! 👨‍🍳</marquee>", unsafe_allow_html=True)
         return
 
-    # Bestellungen anzeigen
     for bestell_id, inhalt in bestellungen:
         with st.container():
             st.markdown(
@@ -198,6 +200,7 @@ def zubereitung():
                 setze_signal()
                 st.session_state.kueche_bestellungen = get_kuechen_bestellungen()
                 st.rerun()
+
 
 
 
