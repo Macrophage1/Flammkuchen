@@ -209,7 +209,8 @@ def statistik():
 st.set_page_config(page_title="Flammkuchen", layout="wide")
 init_db()
 
-params = st.experimental_get_query_params()
+params = st.query_params
+
 if "page" in params:
     st.session_state.page = params["page"][0]
 
@@ -228,7 +229,7 @@ with st.sidebar:
         st.experimental_set_query_params(page="Statistik anzeigen")
         st.session_state.page = "Statistik anzeigen"
     if st.button("🔥 Zubereitung", use_container_width=True):
-        st.experimental_set_query_params(page="Zubereitung")
+        st.query_params["page"] = "Zubereitung"
         st.session_state.page = "Zubereitung"
 
 if "page" not in st.session_state:
