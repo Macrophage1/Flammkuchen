@@ -3,11 +3,13 @@ import sqlite3
 import datetime
 import pandas as pd
 import math
+import time
 
 DB_NUTZER = "nutzer.db"
 DB_ARTIKEL = "artikel.db"
 DB_BESTELLUNG = "bestellungen.db"
 DB_KUECHE = "zubereitung.db"
+DB_SIGNAL = "signal.db"
 
 # Datenbanken initialisieren
 def init_db():
@@ -19,6 +21,22 @@ def init_db():
         conn.execute("CREATE TABLE IF NOT EXISTS bestellungen (id INTEGER PRIMARY KEY AUTOINCREMENT, benutzer TEXT NOT NULL, artikel TEXT NOT NULL, menge INTEGER NOT NULL CHECK(menge > 0), einzelpreis REAL NOT NULL, gesamtpreis REAL NOT NULL, zeitstempel TEXT)")
     with sqlite3.connect(DB_KUECHE) as conn:
         conn.execute("CREATE TABLE IF NOT EXISTS kueche (id INTEGER PRIMARY KEY AUTOINCREMENT, inhalt TEXT NOT NULL, zeit TEXT)")
+    with sqlite3.connect(DB_SIGNAL) as conn:
+        conn.execute("CREATE TABLE IF NOT EXISTS signal (id INTEGER PRIMARY KEY, aktualisieren INTEGER)")
+        conn.execute("INSERT OR IGNORE INTO signal (id, aktualisieren) VALUES (1, 0)")
+
+def setze_signal():
+    with sqlite3.connect(DB_SIGNAL) as conn:
+        conn.execute("UPDATE signal SET aktualisieren = 1 WHERE id = 1")
+
+def zuruecksetzen_signal():
+    with sqlite3.connect(DB_SIGNAL) as conn:
+        conn.execute("UPDATE signal SET aktualisieren = 0 WHERE id = 1")
+
+def pruefe_signal():
+    with sqlite3.connect(DB_SIGNAL) as conn:
+        wert = conn.execute("SELECT aktualisieren FROM signal WHERE id = 1").fetchone()
+        return wert[0] == 1 if wert else False
 
 def get_benutzer():
     with sqlite3.connect(DB_NUTZER) as conn:
@@ -133,29 +151,13 @@ def bestellung():
                 )
                 bestellte_menge += menge
 
-        now = datetime.datetime.now()
-        zwanzig_minuten_zurueck = now - datetime.timedelta(minutes=20)
-        cursor.execute("SELECT SUM(menge) FROM bestellungen WHERE zeitstempel > ?", (zwanzig_minuten_zurueck.strftime("%Y-%m-%d %H:%M:%S"),))
-        warteschlange_menge = cursor.fetchone()[0] or 0
-
-        ofen_kapazitaet = 8
-        backzeit = 5
-        vorbereitung = 2
-        total = warteschlange_menge + bestellte_menge
-        durchgaenge = math.ceil(total / ofen_kapazitaet)
-        minuten = durchgaenge * backzeit + vorbereitung
-        fertig_uhrzeit = now + datetime.timedelta(minutes=minuten)
-        minute = (fertig_uhrzeit.minute // 5 + 1) * 5
-        fertig_uhrzeit = fertig_uhrzeit.replace(minute=0, second=0, microsecond=0) + datetime.timedelta(minutes=minute)
-        abholzeit_str = fertig_uhrzeit.strftime("%H:%M")
-
-        bon_text += f"\n**Abholzeit:** ca. {abholzeit_str}"
         bon_text += f"\n**Gesamt:** {gesamt:.2f} €"
 
         with sqlite3.connect(DB_KUECHE) as kconn:
             kconn.execute("INSERT INTO kueche (inhalt, zeit) VALUES (?, ?)", (zubereitungs_text.strip(), zeit))
 
         conn.commit()
+        setze_signal()
         st.session_state.bon_text = bon_text
         st.session_state.bestellung_abgeschlossen = True
         st.rerun()
@@ -163,10 +165,17 @@ def bestellung():
 def zubereitung():
     st.subheader("🔥 Zubereitung")
 
-    # Autorefresh alle 5 Sekunden
-    st.markdown("<meta http-equiv='refresh' content='5'>", unsafe_allow_html=True)
+    if "letzte_abfrage" not in st.session_state:
+        st.session_state.letzte_abfrage = 0
+    now = time.time()
 
-    bestellungen = get_kuechen_bestellungen()
+    if now - st.session_state.letzte_abfrage > 3:
+        st.session_state.letzte_abfrage = now
+        if pruefe_signal():
+            st.session_state.kueche_bestellungen = get_kuechen_bestellungen()
+            zuruecksetzen_signal()
+
+    bestellungen = st.session_state.get("kueche_bestellungen", get_kuechen_bestellungen())
 
     if not bestellungen:
         st.markdown("## ✅ **Alle Bestellungen erledigt!** 🎉🎉🎉")
@@ -181,6 +190,7 @@ def zubereitung():
             )
             if st.button("✅ Zubereitet", key=f"done_{bestell_id}"):
                 entferne_kuechen_bestellung(bestell_id)
+                zuruecksetzen_signal()
                 st.rerun()
 
 def statistik():
@@ -199,14 +209,13 @@ def statistik():
 st.set_page_config(page_title="Flammkuchen", layout="wide")
 init_db()
 
-# Query-Parameter zur Seitenauswahl lesen
 params = st.experimental_get_query_params()
 if "page" in params:
     st.session_state.page = params["page"][0]
 
 with st.sidebar:
     st.markdown("## Navigation")
-    if st.button("📟 Bestellen", use_container_width=True):
+    if st.button("🧾 Bestellen", use_container_width=True):
         st.experimental_set_query_params(page="Bestellen")
         st.session_state.page = "Bestellen"
     if st.button("👥 Benutzer", use_container_width=True):
