@@ -3,7 +3,6 @@ import sqlite3
 import datetime
 import pandas as pd
 import math
-import time
 
 DB_NUTZER = "nutzer.db"
 DB_ARTIKEL = "artikel.db"
@@ -43,7 +42,6 @@ def entferne_kuechen_bestellung(bestell_id):
     with sqlite3.connect(DB_KUECHE) as conn:
         conn.execute("DELETE FROM kueche WHERE id=?", (bestell_id,))
 
-# Verwaltung
 def benutzer_verwalten():
     st.subheader("Benutzer")
     neuer_name = st.text_input("Neuen Benutzer hinzufügen")
@@ -154,7 +152,6 @@ def bestellung():
         bon_text += f"\n**Abholzeit:** ca. {abholzeit_str}"
         bon_text += f"\n**Gesamt:** {gesamt:.2f} €"
 
-        # Bestellung zur Küche senden
         with sqlite3.connect(DB_KUECHE) as kconn:
             kconn.execute("INSERT INTO kueche (inhalt, zeit) VALUES (?, ?)", (zubereitungs_text.strip(), zeit))
 
@@ -163,13 +160,11 @@ def bestellung():
         st.session_state.bestellung_abgeschlossen = True
         st.rerun()
 
-
 def zubereitung():
     st.subheader("🔥 Zubereitung")
 
-    # Automatischer Reload alle 5 Sekunden (einfach, ohne Extras)
-    
-
+    # Autorefresh alle 5 Sekunden
+    st.markdown("<meta http-equiv='refresh' content='5'>", unsafe_allow_html=True)
 
     bestellungen = get_kuechen_bestellungen()
 
@@ -188,10 +183,6 @@ def zubereitung():
                 entferne_kuechen_bestellung(bestell_id)
                 st.rerun()
 
-
-
-
-
 def statistik():
     st.subheader("📊 Statistik")
     nutzer_filter = st.selectbox("Benutzer filtern", [""] + get_benutzer())
@@ -208,17 +199,27 @@ def statistik():
 st.set_page_config(page_title="Flammkuchen", layout="wide")
 init_db()
 
+# Query-Parameter zur Seitenauswahl lesen
+params = st.experimental_get_query_params()
+if "page" in params:
+    st.session_state.page = params["page"][0]
+
 with st.sidebar:
     st.markdown("## Navigation")
-    if st.button("🧾 Bestellen", use_container_width=True):
+    if st.button("📟 Bestellen", use_container_width=True):
+        st.experimental_set_query_params(page="Bestellen")
         st.session_state.page = "Bestellen"
     if st.button("👥 Benutzer", use_container_width=True):
+        st.experimental_set_query_params(page="Benutzer verwalten")
         st.session_state.page = "Benutzer verwalten"
     if st.button("🛠️ Artikel", use_container_width=True):
+        st.experimental_set_query_params(page="Artikel verwalten")
         st.session_state.page = "Artikel verwalten"
     if st.button("📊 Statistik", use_container_width=True):
+        st.experimental_set_query_params(page="Statistik anzeigen")
         st.session_state.page = "Statistik anzeigen"
     if st.button("🔥 Zubereitung", use_container_width=True):
+        st.experimental_set_query_params(page="Zubereitung")
         st.session_state.page = "Zubereitung"
 
 if "page" not in st.session_state:
