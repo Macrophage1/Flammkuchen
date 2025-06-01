@@ -217,16 +217,16 @@ if "page" in params:
 with st.sidebar:
     st.markdown("## Navigation")
     if st.button("🧾 Bestellen", use_container_width=True):
-        st.experimental_set_query_params(page="Bestellen")
+        st.query_params(page="Bestellen")
         st.session_state.page = "Bestellen"
     if st.button("👥 Benutzer", use_container_width=True):
-        st.experimental_set_query_params(page="Benutzer verwalten")
+        st.query_params(page="Benutzer verwalten")
         st.session_state.page = "Benutzer verwalten"
     if st.button("🛠️ Artikel", use_container_width=True):
-        st.experimental_set_query_params(page="Artikel verwalten")
+        st.query_params(page="Artikel verwalten")
         st.session_state.page = "Artikel verwalten"
     if st.button("📊 Statistik", use_container_width=True):
-        st.experimental_set_query_params(page="Statistik anzeigen")
+        st.query_params(page="Statistik anzeigen")
         st.session_state.page = "Statistik anzeigen"
     if st.button("🔥 Zubereitung", use_container_width=True):
         st.query_params["page"] = "Zubereitung"
