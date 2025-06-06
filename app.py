@@ -6,21 +6,22 @@ import math
 import time
 import serial
 
-def drucke_bon(text: str):
-    port = "/dev/tty.PT-210_30A1"  # ← das ist dein Thermodrucker via Bluetooth
-    try:
-        with serial.Serial(port, 9600, timeout=1) as drucker:
-            drucker.write(text.encode('utf-8'))
-            drucker.write(b"\n\n\n")  # Zeilenvorschub
-            print("Bon erfolgreich gedruckt.")
-    except Exception as e:
-        print(f"Fehler beim Drucken: {e}")
-
 DB_NUTZER = "nutzer.db"
 DB_ARTIKEL = "artikel.db"
 DB_BESTELLUNG = "bestellungen.db"
 DB_KUECHE = "zubereitung.db"
 DB_SIGNAL = "signal.db"
+
+def drucke_bon(text: str):
+    port = "/dev/tty.PT-210_30A1"
+    try:
+        st.write("🖨️ Starte Bondruck...")
+        with serial.Serial(port, 9600, timeout=1) as drucker:
+            drucker.write(text.encode('utf-8'))
+            drucker.write(b"\n\n\n")
+            st.success("✅ Bon erfolgreich gedruckt.")
+    except Exception as e:
+        st.error(f"❌ Druckfehler: {e}")
 
 # Datenbanken initialisieren
 def init_db():
