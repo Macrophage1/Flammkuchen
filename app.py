@@ -15,13 +15,13 @@ DB_SIGNAL = "signal.db"
 def drucke_bon(text: str):
     port = "/dev/tty.PT-210_30A1"
     try:
-        st.write("🖨️ Starte Bondruck...")
+        print("→ Druckfunktion aufgerufen")  # für Terminal-Debug
         with serial.Serial(port, 9600, timeout=1) as drucker:
             drucker.write(text.encode('utf-8'))
             drucker.write(b"\n\n\n")
-            st.success("✅ Bon erfolgreich gedruckt.")
     except Exception as e:
         st.error(f"❌ Druckfehler: {e}")
+
 
 # Datenbanken initialisieren
 def init_db():
