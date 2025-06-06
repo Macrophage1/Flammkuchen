@@ -5,6 +5,7 @@ import pandas as pd
 import math
 import time
 import serial
+import os
 
 DB_NUTZER = "nutzer.db"
 DB_ARTIKEL = "artikel.db"
@@ -12,8 +13,15 @@ DB_BESTELLUNG = "bestellungen.db"
 DB_KUECHE = "zubereitung.db"
 DB_SIGNAL = "signal.db"
 
+
+
 def drucke_bon(text: str):
     port = "/dev/tty.PT-210_30A1"
+
+    if not os.path.exists(port):
+        st.error("❌ Drucker nicht verbunden. Bitte Bluetooth neu verbinden.")
+        return
+
     st.write("🖨️ Druckfunktion wird gestartet...")
     try:
         with serial.Serial(port, 9600, timeout=1) as drucker:
@@ -22,6 +30,7 @@ def drucke_bon(text: str):
         st.success("✅ Bon erfolgreich gedruckt.")
     except Exception as e:
         st.error(f"❌ Druckfehler: {e}")
+
 
 
 
