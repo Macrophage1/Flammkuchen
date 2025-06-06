@@ -142,16 +142,21 @@ def bestellung():
     st.markdown(f"### 💰 Gesamt: {gesamt:.2f} €")
 
     if st.button("✅ Bestellung abschließen"):
+        if gesamt == 0:
+            st.warning("Es wurden keine Artikel ausgewählt.")
+            return
+
         bestellnummer = cursor.execute("SELECT MAX(id) FROM bestellungen").fetchone()[0]
         bestellnummer = (bestellnummer or 0) + 1
         zeit = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        bon_text = f"""🧾 **Bestellnummer:** #{bestellnummer}
-**Benutzer:** {benutzer}
+        bon_text = f"""🧾 Bestellnummer: #{bestellnummer}
+Benutzer: {benutzer}
 
 """
         bestellte_menge = 0
         zubereitungs_text = f"Bestellung #{bestellnummer} – {benutzer}\n"
+
         for name, (menge, preis) in artikel_mengen.items():
             if menge > 0:
                 einzel_summe = menge * preis
@@ -163,7 +168,9 @@ def bestellung():
                 )
                 bestellte_menge += menge
 
-        bon_text += f"\n**Gesamt:** {gesamt:.2f} €"
+        bon_text += f"\nGesamt: {gesamt:.2f} €\n{zeit}"
+
+        st.info("🖨️ Bon wird gedruckt...")
         drucke_bon(bon_text)
 
         with sqlite3.connect(DB_KUECHE) as kconn:
@@ -174,6 +181,7 @@ def bestellung():
         st.session_state.bon_text = bon_text
         st.session_state.bestellung_abgeschlossen = True
         st.rerun()
+
 
 from streamlit_autorefresh import st_autorefresh
 
