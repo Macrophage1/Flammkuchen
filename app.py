@@ -14,13 +14,15 @@ DB_SIGNAL = "signal.db"
 
 def drucke_bon(text: str):
     port = "/dev/tty.PT-210_30A1"
+    st.write("🖨️ Druckfunktion wird gestartet...")
     try:
-        print("→ Druckfunktion aufgerufen")  # für Terminal-Debug
         with serial.Serial(port, 9600, timeout=1) as drucker:
             drucker.write(text.encode('utf-8'))
             drucker.write(b"\n\n\n")
+        st.success("✅ Bon erfolgreich gedruckt.")
     except Exception as e:
         st.error(f"❌ Druckfehler: {e}")
+
 
 
 # Datenbanken initialisieren
@@ -182,6 +184,8 @@ Benutzer: {benutzer}
         st.session_state.bestellung_abgeschlossen = True
         st.rerun()
 
+if st.button("📄 Testdruck"):
+    drucke_bon("Flammkuchen-Testdruck\n1x Klassik 5.00 €\nGesamt: 5.00 €\n\n\n")
 
 from streamlit_autorefresh import st_autorefresh
 
