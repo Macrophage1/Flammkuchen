@@ -4,6 +4,17 @@ import datetime
 import pandas as pd
 import math
 import time
+import serial
+
+def drucke_bon(text: str):
+    port = "/dev/tty.PT-210_30A1"  # ← das ist dein Thermodrucker via Bluetooth
+    try:
+        with serial.Serial(port, 9600, timeout=1) as drucker:
+            drucker.write(text.encode('utf-8'))
+            drucker.write(b"\n\n\n")  # Zeilenvorschub
+            print("Bon erfolgreich gedruckt.")
+    except Exception as e:
+        print(f"Fehler beim Drucken: {e}")
 
 DB_NUTZER = "nutzer.db"
 DB_ARTIKEL = "artikel.db"
@@ -152,6 +163,7 @@ def bestellung():
                 bestellte_menge += menge
 
         bon_text += f"\n**Gesamt:** {gesamt:.2f} €"
+        drucke_bon(bon_text)
 
         with sqlite3.connect(DB_KUECHE) as kconn:
             kconn.execute("INSERT INTO kueche (inhalt, zeit) VALUES (?, ?)", (zubereitungs_text.strip(), zeit))
