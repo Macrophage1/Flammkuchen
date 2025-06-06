@@ -184,8 +184,6 @@ Benutzer: {benutzer}
         st.session_state.bestellung_abgeschlossen = True
         st.rerun()
 
-if st.button("📄 Testdruck"):
-    drucke_bon("Flammkuchen-Testdruck\n1x Klassik 5.00 €\nGesamt: 5.00 €\n\n\n")
 
 from streamlit_autorefresh import st_autorefresh
 
