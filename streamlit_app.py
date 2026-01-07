@@ -587,18 +587,39 @@ st.set_page_config(page_title="Firecake Kassensystem", page_icon="🔥", layout=
 st.markdown(
     """
     <style>
-      .block-container {padding-top: 1.25rem; padding-bottom: 2rem;}
-      [data-testid="stMetricValue"] {font-size: 1.6rem;}
-      .fc-card {border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 14px;}
-      .fc-muted {opacity: 0.8;}
-      .fc-h {font-weight: 800; letter-spacing: .2px;}
-      .stButton>button {border-radius: 12px; padding: .55rem .9rem;}
-      .stTextInput>div>div>input, .stNumberInput input {border-radius: 12px;}
-      .stSelectbox>div>div {border-radius: 12px;}
+      /* Platz für Streamlit-Header lassen */
+      .block-container {
+        padding-top: 4.5rem !important;
+        padding-bottom: 2rem;
+      }
+
+      .fc-card {
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 14px;
+      }
+
+      .fc-muted { opacity: 0.8; }
+      .fc-h { font-weight: 800; letter-spacing: .2px; }
+
+      .stButton>button {
+        border-radius: 12px;
+        padding: .55rem .9rem;
+      }
+
+      .stTextInput>div>div>input,
+      .stNumberInput input {
+        border-radius: 12px;
+      }
+
+      .stSelectbox>div>div {
+        border-radius: 12px;
+      }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
 
 if not GITHUB_REPO:
     st.error("Secrets fehlen: Bitte GITHUB_REPO setzen (z.B. 'user/firecake').")
