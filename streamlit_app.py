@@ -583,45 +583,31 @@ def repo_image_bytes(store: GitHubCSVStore, path: str) -> Optional[bytes]:
 
 st.set_page_config(page_title="Firecake Kassensystem", page_icon="🔥", layout="wide")
 
-# Modernes "Dark-ish" Styling
-st.markdown(
-    """
-    <style>
-      /* 1) Inhalt runter, damit nix unter dem Header liegt */
-      .block-container{
-        padding-top: 6rem !important;
-        padding-bottom: 2rem !important;
-      }
+st.markdown("""
+<style>
+/* ✅ robust: trifft neue + alte Streamlit DOM-Struktur */
+div[data-testid="stAppViewContainer"] .main .block-container,
+section.main > div.block-container,
+div.block-container {
+  padding-top: 7rem !important;
+  padding-bottom: 2rem !important;
+}
 
-      /* 2) Header wirklich oben halten + eigene Ebene */
-      header[data-testid="stHeader"]{
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        z-index: 999999 !important;
-        background: rgba(15,18,24,0.92) !important;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-      }
+/* optional: nur zum Debuggen sichtbar machen, dass CSS wirklich aktiv ist */
+div[data-testid="stAppViewContainer"]::before{
+  content:"CSS AKTIV";
+  position: fixed;
+  top: 0.35rem;
+  left: 0.75rem;
+  z-index: 9999999;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.6);
+}
+</style>
+""", unsafe_allow_html=True)
 
-      /* 3) Toolbar-Container auch ganz nach oben */
-      [data-testid="stToolbar"]{
-        position: relative !important;
-        z-index: 1000000 !important;
-      }
-
-      /* optional: Deko-Leiste nicht so dominant */
-      div[data-testid="stDecoration"]{
-        background-image: none !important;
-        height: 2px !important;
-        background: rgba(255,255,255,0.12) !important;
-      }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 
 
