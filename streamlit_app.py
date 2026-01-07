@@ -582,6 +582,7 @@ def repo_image_bytes(store: GitHubCSVStore, path: str) -> Optional[bytes]:
 # =======================
 
 st.set_page_config(page_title="Firecake Kassensystem", page_icon="🔥", layout="wide")
+st.warning("BUILD TEST: 2026-01-07 23:05", icon="🧪")
 
 st.markdown("""
 <style>
