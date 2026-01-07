@@ -589,7 +589,7 @@ st.markdown(
     <style>
       /* Platz für Streamlit-Header lassen */
       .block-container {
-        padding-top: 4.5rem !important;
+        padding-top: 8rem !important;
         padding-bottom: 2rem;
       }
 
