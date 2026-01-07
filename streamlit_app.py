@@ -587,38 +587,42 @@ st.set_page_config(page_title="Firecake Kassensystem", page_icon="🔥", layout=
 st.markdown(
     """
     <style>
-      /* Platz für Streamlit-Header lassen */
-      .block-container {
-        padding-top: 8rem !important;
-        padding-bottom: 2rem;
+      /* 1) Inhalt runter, damit nix unter dem Header liegt */
+      .block-container{
+        padding-top: 6rem !important;
+        padding-bottom: 2rem !important;
       }
 
-      .fc-card {
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 16px;
-        padding: 14px;
+      /* 2) Header wirklich oben halten + eigene Ebene */
+      header[data-testid="stHeader"]{
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 999999 !important;
+        background: rgba(15,18,24,0.92) !important;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
       }
 
-      .fc-muted { opacity: 0.8; }
-      .fc-h { font-weight: 800; letter-spacing: .2px; }
-
-      .stButton>button {
-        border-radius: 12px;
-        padding: .55rem .9rem;
+      /* 3) Toolbar-Container auch ganz nach oben */
+      [data-testid="stToolbar"]{
+        position: relative !important;
+        z-index: 1000000 !important;
       }
 
-      .stTextInput>div>div>input,
-      .stNumberInput input {
-        border-radius: 12px;
-      }
-
-      .stSelectbox>div>div {
-        border-radius: 12px;
+      /* optional: Deko-Leiste nicht so dominant */
+      div[data-testid="stDecoration"]{
+        background-image: none !important;
+        height: 2px !important;
+        background: rgba(255,255,255,0.12) !important;
       }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
 
 
 if not GITHUB_REPO:
