@@ -1,1 +1,2 @@
 order_id;timestamp;user_name;items_json;total
+1;2026-01-08T20:59:54;Admin;"[{""product_id"": 2, ""name"": ""Vegetarisch"", ""quantity"": 1, ""price_single"": 7.0, ""special"": """"}]";7.00
