@@ -661,7 +661,7 @@ with tabs[0]:
                     st.markdown(f"<span class='fc-muted'>{money(p.price)}</span>", unsafe_allow_html=True)
 
                     if st.button("Hinzufügen", key=f"add_{p.product_id}"):
-                        sp = (st.session_state.special or "").strip()
+                        sp = (st.session_state.get("special_input", "") or "").strip()
                         # gleiche Logik: gleiche Produkt+Sonderwunsch wird hochgezählt
                         existing = next(
                             (i for i in st.session_state.cart if i.product_id == p.product_id and (i.special or "").strip() == sp),
@@ -673,7 +673,7 @@ with tabs[0]:
                             st.session_state.cart.append(
                                 OrderItem(product_id=p.product_id, name=p.name, quantity=1, price_single=p.price, special=sp)
                             )
-                        st.session_state.special = ""
+                        st.session_state["special_input"] = ""
                         st.success(f"{p.name} hinzugefügt")
                     st.markdown("</div>", unsafe_allow_html=True)
 
